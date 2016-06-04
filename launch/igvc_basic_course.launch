@@ -1,25 +1,70 @@
 <launch>
-    <!-- Robot Pose -->
-   <arg name="x" default="-2"/>
-    <arg name="y" default="-21.5"/>
-    <arg name="z" default="0"/>
-    <arg name="roll" default="0"/>
-    <arg name="pitch" default="0"/>
-    <arg name="yaw" default="3.14"/>
 
+  <!-- Robot Pose -->
+  <arg name="x" default="-2"/>
+  <arg name="y" default="-21.5"/>
+  <arg name="z" default="0"/>
+  <arg name="roll" default="0"/>
+  <arg name="pitch" default="0"/>
+  <arg name="yaw" default="3.14"/>
+
+  <!-- Settings --> 
+  <arg name="use_sim" default="true" />
+  <arg name="use_gazebo_gui" default="true" />
+  <arg name="launch_rviz" default="true" />
+  <arg name="use_teleop" default="true" />
+  <arg name="generate_robot" default="true" />
+  <arg name="use_velodyne" default="true" />
+
+  <group if="$(arg launch_rviz)">
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find usma_gazebo)/launch/gazebo.rviz" />
+  </group>
+
+  <group if="$(arg generate_robot)">
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find gvr_bot)/urdf/gvr_bot.urdf.xacro'" />
+    <node
+      name="joint_state_publisher"
+      pkg="joint_state_publisher"
+      type="joint_state_publisher" />
+    <node
+      name="robot_state_publisher"
+      pkg="robot_state_publisher"
+      type="state_publisher">
+      <param name="publish_frequency" value="250.0" />
+    </node>
+  </group>
+
+  <group if="$(arg use_teleop)">
+    <arg name="joy_dev" default="/dev/input/js0" />
+    <!-- When using an Xbox 360 controller A is the trigger and the left joystick will move the robot -->
+    <node pkg="joy" type="joy_node" name="joy_node">
+      <param name="dev" value="$(arg joy_dev)" />
+      <param name="deadzone" value="0.3" />
+      <param name="autorepeat_rate" value="20" />
+    </node>
+  
+    <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node">
+      <remap from="/cmd_vel" to="/gvr_bot/cmd_vel" />
+    </node>
+  </group>
+ 
+  <group if="$(arg use_sim)"> 
     <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find usma_gazebo)/worlds/igvc_basic.world"/>
         <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="$(arg use_gazebo_gui)" />
         <!-- more default parameters can be changed here -->
     </include>
 
-    <!-- Convert an xacro and put on parameter server -->
-    <param name="robot_description" command="$(find xacro)/xacro.py '$(find gvr_bot)/models/robots/gvr_bot.urdf.xacro'" />
+    <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model"
+      args="-param robot_description
+            -urdf
+            -model robot_description
+            -x $(arg x) -y $(arg y) -z $(arg z)
+            -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"
+      respawn="false" output="screen" />
+    <node name="velodyne_spin" pkg="usma_velodyne" type="start_velodyne_spindle" />
+  </group>
 
-    <!-- Spawn a robot into Gazebo -->
-    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
-          args="-param robot_description -urdf -model gvr_bot
-          -x $(arg x) -y $(arg y) -z $(arg z)
-          -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"/>
 </launch>

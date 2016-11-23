@@ -1,0 +1,44 @@
+<!--test-->
+<launch>
+    <arg name="x" default="-2"/>
+    <arg name="y" default="-21.5"/>
+    <arg name="z" default="0"/>
+    <arg name="roll" default="0"/>
+    <arg name="pitch" default="0"/>
+    <arg name="yaw" default="3.14"/>
+    <arg name="use_gazebo_gui" default="true" />
+
+    <!-- <param name="robot_description" command="$(find xacro)/xacro.py '$(find gvr_bot)/urdf/gvr_bot.urdf.xacro'" /> -->
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find igvc_description)/urdf/IGGY_urdf.urdf.xacro'" />
+    <node
+      name="joint_state_publisher"
+      pkg="joint_state_publisher"
+      type="joint_state_publisher" />
+    <node
+      name="robot_state_publisher"
+      pkg="robot_state_publisher"
+      type="state_publisher">
+      <param name="publish_frequency" value="250.0" />
+    </node>
+
+    <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find usma_gazebo)/worlds/igvc_basic.world"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="$(arg use_gazebo_gui)" />
+        <!-- more default parameters can be changed here -->
+    </include>
+
+    <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model"
+      args="-param robot_description
+            -urdf
+            -model robot_description
+            -x $(arg x) -y $(arg y) -z $(arg z)
+            -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"
+      respawn="false" output="screen">
+        <!-- <remap from=  "/gvr_bot/cmd_vel" to= "/roboteq_driver/cmd_vel"/> -->
+      </node>
+    <node name="velodyne_spin" pkg="usma_velodyne" type="start_velodyne_spindle" />
+ 
+
+</launch>

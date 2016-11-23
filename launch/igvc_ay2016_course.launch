@@ -23,7 +23,7 @@
 
   <group if="$(arg generate_robot)">
     <!-- <param name="robot_description" command="$(find xacro)/xacro.py '$(find gvr_bot)/urdf/gvr_bot.urdf.xacro'" /> -->
-    <param name="robot_description" command="$(find xacro)/xacro.py '$(find igvc_description)/urdf/igvc.urdf.xacro'" />
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find igvc_model)/model/igvc.urdf.xacro'" />
     <node
       name="joint_state_publisher"
       pkg="joint_state_publisher"
@@ -33,6 +33,7 @@
       pkg="robot_state_publisher"
       type="state_publisher">
       <param name="publish_frequency" value="250.0" />
+
     </node>
   </group>
 
@@ -48,7 +49,7 @@
     </node>
   
     <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node">
-      <!--<remap from="/cmd_vel" to="/gvr_bot/cmd_vel" /> -->
+      <remap from="/cmd_vel" to="/roboteq_driver/cmd_vel" />
     </node>
   </group>
  
@@ -67,7 +68,9 @@
             -model robot_description
             -x $(arg x) -y $(arg y) -z $(arg z)
             -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"
-      respawn="false" output="screen" />
+      respawn="false" output="screen">
+        <!-- <remap from=  "/gvr_bot/cmd_vel" to= "/roboteq_driver/cmd_vel"/> -->
+      </node>
     <node name="velodyne_spin" pkg="usma_velodyne" type="start_velodyne_spindle" />
   </group>
 

@@ -8,8 +8,9 @@
     <arg name="yaw" default="3.14"/>
     <arg name="use_gazebo_gui" default="true" />
 
-    <!-- <param name="robot_description" command="$(find xacro)/xacro.py '$(find gvr_bot)/urdf/gvr_bot.urdf.xacro'" /> -->
-    <param name="robot_description" command="$(find xacro)/xacro.py '$(find igvc_description)/urdf/IGGY_urdf.urdf.xacro'" />
+    <!-- <param name="robot_description" command="$(find xacro)/xacro.py '$(find igvc_description)/urdf/igvc.urdf.xacro'" /> 
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find igvc_description)/urdf/IGGY_urdf.urdf.xacro'" /> -->
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find igvc_description)/urdf/iggy.urdf.xacro'" />  
     <node
       name="joint_state_publisher"
       pkg="joint_state_publisher"

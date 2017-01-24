@@ -22,7 +22,7 @@
   </group>
 
   <group if="$(arg generate_robot)">
-    <!-- <param name="robot_description" command="$(find xacro)/xacro.py '$(find gvr_bot)/urdf/gvr_bot.urdf.xacro'" /> -->
+    <!-- <param name="robot_description" command="$(find xacro)/xacro.py '$(find IGVC)/urdf/IGVC.urdf.xacro'" /> -->
     <param name="robot_description" command="$(find xacro)/xacro.py '$(find igvc_description)/urdf/igvc.urdf.xacro'" />
     <node
       name="joint_state_publisher"
@@ -48,7 +48,7 @@
     </node>
   
     <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node">
-      <!--<remap from="/cmd_vel" to="/gvr_bot/cmd_vel" /> -->
+      <remap from="/cmd_vel" to="gvr_bot/cmd_vel" />
     </node>
   </group>
  

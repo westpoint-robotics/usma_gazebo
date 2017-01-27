@@ -48,7 +48,7 @@
     </node>
   
     <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node">
-      <remap from="/cmd_vel" to="gvr_bot/cmd_vel" />
+      <remap from="/cmd_vel" to="iggy/cmd_vel" />
     </node>
   </group>
  
